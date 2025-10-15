@@ -1,6 +1,7 @@
 source 'https://rubygems.org'
 
-ruby '2.6.6'
+# ruby '2.6.6'
+ruby '2.7.8'
 gem 'rails', '4.2.11'
 gem 'ffi', '~> 1.15.0'
 gem 'sass-rails', '~> 5.0.3'
