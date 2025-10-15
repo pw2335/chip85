@@ -1,0 +1,72 @@
+<!-- 显示错误/成功提示（后续Part 5会用到） -->
+<% flash.each do |key, value| %>
+  <div class="alert alert-<%= key %> alert-dismissible fade show">
+    <%= value %>
+    <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+  </div>
+<% end %>
+
+<!-- 搜索表单：提交到search_tmdb动作，使用GET请求（便于调试） -->
+<h2>Search in TMDb</h2>
+<%= form_tag search_tmdb_path, method: :get, id: "tmdb_form" do %>
+  <div class="mb-3">
+    <label for="movie_name" class="form-label">Movie Name</label>
+    <%= text_field_tag :search_terms, params[:search_terms], id: "movie_name", class: "form-control" %>
+  </div>
+  <div class="mb-3">
+    <label for="release_date" class="form-label">Release Date</label>
+    <%= text_field_tag :release_year, params[:release_year], id: "release_date", class: "form-control" %>
+  </div>
+  <div class="mb-3">
+    <label class="form-label">Language</label>
+    <%= radio_button_tag :language, "en", true, id: "en_lang" %>
+    <%= label_tag :en_lang, "English Only" %>
+    <%= radio_button_tag :language, "all", false, id: "all_lang" %>
+    <%= label_tag :all_lang, "All Languages" %>
+  </div>
+  <!-- 搜索按钮 -->
+  <%= submit_tag "Search", class: "btn btn-primary" %>
+  <!-- 返回主页按钮（链接到电影列表页） -->
+  <%= link_to "Back to movie list", movies_path, class: "btn btn-secondary ms-2" %>
+<% end %>
+
+<!-- 搜索结果表格（后续Part 5会动态渲染） -->
+<% if @movies.present? %>
+  <h3 class="mt-4">Search Results</h3>
+  <table id="search_movies" class="table table-striped">
+    <thead>
+      <tr>
+        <th>Title</th>
+        <th>Release Date</th>
+        <th>Language</th>
+        <th>Action</th>
+      </tr>
+    </thead>
+    <tbody>
+      <% @movies.each do |movie| %>
+        <tr>
+          <td><%= movie[:title] %></td>
+          <td><%= movie[:release_date] %></td>
+          <td><%= movie[:language] %></td>
+          <td>
+            <!-- 添加电影到数据库的表单（使用隐藏字段传递参数） -->
+            <%= form_tag add_movie_path, method: :post do %>
+              <%= hidden_field_tag :title, movie[:title] %>
+              <%= hidden_field_tag :release_date, movie[:release_date] %>
+              <%= hidden_field_tag :language, movie[:language] %>
+              <%= hidden_field_tag :rating, "R" %>  <!-- TMDb不返回评级，默认填R -->
+              <%= submit_tag "Add to RottenPotatoes", class: "btn btn-sm btn-success" %>
+            <% end %>
+          </td>
+        </tr>
+      <% end %>
+    </tbody>
+  </table>
+<% end %>
+
+<% flash.each do |key, value| %>
+  <div class="alert alert-<%= key %> alert-dismissible fade show" role="alert">
+    <%= value %>
+    <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+  </div>
+<% end %>
